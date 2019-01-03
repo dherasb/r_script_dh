@@ -159,10 +159,6 @@ ggplot(abi.t,aes(f,fill=factor(abi), position='dodge',))+geom_bar()+coord_flip()
 ```
 
 
-
-
-
-
 ```{r}
 
 # Consoryacu
@@ -232,17 +228,54 @@ ggplot(abi.t,aes(f,fill=factor(abi), position='dodge',))+geom_bar()+coord_flip()
 
 ```
 
+## ANALISIS FÍSICO QUIMICOS
+
+
 
 ```{r}
 
-fq <- read_excel("macroinv.xlsx", sheet = "fq")
-head(fq)
+# Fisico químicos ICA
 
 
+
+setwd("D:/Proy_GitHub_DH/r_script_dh/proj.macroinv")
+ica0 <- read_excel("macroinv.xlsx", sheet = "ica")
+#head(ica0)
+ica<-data.frame(sitio=ica0$sitio,ica=ica0$ica)
+head(ica)
+
+# Verificación de supuestos de ANOVA
+
+# Test de normalidad de los datos
+library(nortest)
+shapiro.test(ica$ica)
+ad.test(ica$ica)
+lillie.test(ica$ica)
+
+# Test de hmogenidad de varianza
+
+bartlett.test(ica~sitio, data = ica)
+boxplot(ica~sitio, data=ica)
+library(gplots)
+attach(ica)
+plotmeans(ica$ica ~ ica$sitio)
+m1<-aov(ica~sitio,data = ica)   # modelo anova
+summary(m1)
+
+opar<-par(mfrow=c(2,2), oma=c(0,0,1.1,0))
+plot(m1)
+
+plot(TukeyHSD(m1),las=2)
+TukeyHSD(m1)
 
 
 
 ```
+
+
+
+
+
 
 
 

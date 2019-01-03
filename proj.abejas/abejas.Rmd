@@ -8,8 +8,8 @@ output: html_notebook
 ```{r}
 
 data <- read_excel("data.xlsx", sheet = "Hoja4")
-bee<-data.frame(sector=factor(data$sector),mes=factor(data$mes),variable=factor(data$var),valor=data$valor)
-str(bee)
+bee<-data.frame(sector=factor(data$setor),mes=factor(data$mes),variable=factor(data$variable),valor=data$valor)
+#str(bee)
 head(bee)
 
 
@@ -25,9 +25,9 @@ mp<-bee$valor[bee$variable=="mp"]
 
 r1<-data.frame(miel, polen, mp)
 pairs(r1)
-plot(polen,mp)
+boxplot(r1)
 
-cor(r1)
+cor(r1,method = "pearson")
 
 
 
@@ -48,25 +48,85 @@ head(miel)
 ```
 
 
+Ya que el objetivo principal de la tesis es comparar los niveles de plomo en bioinicadores se realizó la comparación entre tres grupos de contenídos de plomo utilizando el análisis de varianza ANOVA de una vía.
+Procedemos a verificar los supuestos:
+- Barlet : vp menor a 0.05 y se encontró que los datos no son homocedáticos 
+- Shapiro: vp menor a o.o5 y se encontró que los datos no son normales para cada muestra
+
+
 ```{r}
 
-data <- read_excel("data.xlsx", sheet = "Hoja5")
-bee<-data.frame(sector=factor(data$Sector),variable=factor(data$var),valor=data$valor)
-str(bee)
-head(bee)
-pairs(bee)
+# analisis ANOVA para encontrar 
+
+
+d5 <- read_excel("data.xlsx", sheet = "Hoja5")
+head(d5)
+boxplot(valor~var, data = d5)
+m1<-aov(valor~var, data = d5)
+summary(m1)
+
+
 
 ```
 
 
+Como se puede observar el valor P es menor al nivel de significancia alfa= 0.05, se rechaza la hipótesis nula de que los niveles de plomo en los tres grupos de bioindicadores son diferentes. Para conocer las diferencias entre pares se realizó un análisis pos
+
+
+```{r}
+
+plot(TukeyHSD(m1),las=2)
+TukeyHSD(m1)
+
+
+```
+
+Los resultados del análisis Post Hoc se puede apreciar que hay suficiente evidencia estádisitica para declarar que exiten diferncias significativas que rechazan la igualdad de niveles de plomo entre los pares mp-miel y polen-mp con valores p iguales a 0.012 y 0.0017 respectivamente. Evidentemente el único par con medias iguales es polen-miel. 
+
+```{r}
+# Comprobación de los supuestos del modelo
+
+# Prueba de Bartlett para probar homocedasticidad, es decir deberían ser varianzas iguales.
+
+bartlett.test(valor~var,data = d5)
+
+# Normalidad de los datos, deberían ser nomales.
+shapiro.test(d5$valor)
+
+opar<-par(mfrow=c(2,2), oma=c(0,0,1.1,0))
+plot(m1)
+
+```
+
+
+```{r}
+
+d5<-data.frame(d5)
+attach(d5)
+rmanova(valor~var,data = d5)
 
 
 
+```
+
+
+```{r}
+
+miel<-c(0.033,0.033,0.033,0.033,0.049,0.033)
+polen<-c(0.06,0.07,0.06,0.04,0.05,0.04)
+
+summary(miel)
+summary(polen)
+
+boxplot(miel,polen)
+t.test(miel,polen, paired = F, var.equal = F)
+ 
+library(WRS2)
+yuen(formula = valor~var, data=d5)
 
 
 
-
-
+```
 
 
 
