@@ -9,7 +9,7 @@ El set de datos se compone de un muestreo realizado como se ve en el siguiente g
 
 
 ```{r}
-
+library(readxl)
 macroinv <- read_excel("macroinv.xlsx", sheet = "macro")
 mi<-data.frame(quebrada=macroinv$quebrada,temp=macroinv$temp,lugar=macroinv$lugar,fecha=macroinv$fecha,orden=macroinv$orden,familia=macroinv$familia,conteo=macroinv$conteo,abi=macroinv$abi,bmw=macroinv$bmw,stringsAsFactors = T)
 str(mi)
@@ -248,8 +248,6 @@ head(ica)
 
 # Test de normalidad de los datos
 library(nortest)
-shapiro.test(ica$ica)
-ad.test(ica$ica)
 lillie.test(ica$ica)
 
 # Test de hmogenidad de varianza
@@ -267,6 +265,19 @@ plot(m1)
 
 plot(TukeyHSD(m1),las=2)
 TukeyHSD(m1)
+
+
+
+```
+
+```{r}
+
+# Alternativa robusta al ANOVA
+
+library(DescTools)
+library(WRS2)
+t1way(ica~sitio, data = ica)
+lincon(ica~sitio, data = ica)
 
 
 

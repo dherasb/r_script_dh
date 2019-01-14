@@ -92,20 +92,11 @@ bartlett.test(valor~var,data = d5)
 
 # Normalidad de los datos, deberían ser nomales.
 shapiro.test(d5$valor)
+library(nortest)
+lillie.test(d5$valor)
 
 opar<-par(mfrow=c(2,2), oma=c(0,0,1.1,0))
 plot(m1)
-
-```
-
-
-```{r}
-
-d5<-data.frame(d5)
-attach(d5)
-rmanova(valor~var,data = d5)
-
-
 
 ```
 
@@ -125,10 +116,19 @@ library(WRS2)
 yuen(formula = valor~var, data=d5)
 
 
-
 ```
 
 
+```{r}
+#library(corrplot)
+#(M<-cor(polen,miel, method = "spearman"))
+
+#cor.test(miel,polen, method = "spearman")
+
+cor.test(miel,polen, use = "everything",
+    method = c("pearson", "kendall", "spearman"))
+
+```
 
 
 

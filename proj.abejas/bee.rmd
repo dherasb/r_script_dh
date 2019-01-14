@@ -1,0 +1,47 @@
+---
+title: "Bee correlations"
+output: html_notebook
+---
+
+
+
+```{r}
+library(readxl)
+bee<-read_excel("../proj.abejas/data.xlsx",sheet = "Hoja6")
+head(bee)
+mp<-bee[bee$variable=="mp",]       # separamos los datos de mp
+head(mp)
+polen<-bee[bee$variable=="polen",]  # separamos los datos de polen
+head(polen)
+
+library(nortest)
+lillie.test(mp$valor)     # comprobamos normalidad del vector de datos de mp
+shapiro.test(mp$valor)
+lillie.test(polen$valor)     # comprobamos normalidad del vector de datos de polen
+shapiro.test(polen$valor)
+
+library(MASS)
+plot(mp$valor,polen$valor, pch=10)
+
+reg<-lm(mp$valor~polen$valor)
+plot(mp$valor,polen$valor)
+#abline(coef(lm(mp$valor~polen$valor)))
+
+
+
+cor.test(mp$valor,polen$valor,method = "pearson")
+
+
+
+
+```
+
+
+1. Comprobar normalidad en los datos para poder aplicar el test de correlación de spearman para encontrar algun tipo de correlación o relación lineal entre los niveles de plomo encontrados en las mediciones de material particulado y en las mediciones de polen. (Prueba de normalidad realizadas fueron de Shapiro Wilks, Kolmogorov Smirnov-Lilliefors ). Ho: los datos son norales, todos los valores p fueron mayores a 0.05. por tanto los datos son normales en ambas variables.
+
+
+2. COmo los datos resultaron normales se aplicó el test de correlación de spearman que busca algun tipo de relación lineal entre las variables. En este caso la hipótesisi nula del test es Ho: rho=0, que sinifica "Ho: no existe relación". Como el valor-p encontrado es p-value=0.6145 no se rechaza la hipótesis nula, es decir que con un nivel de confianza del 95% podemos afirmar de que no existe una relación lineal significativa entre ambas variables.
+
+
+
+

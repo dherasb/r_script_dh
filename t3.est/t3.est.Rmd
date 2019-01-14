@@ -1,0 +1,76 @@
+---
+title: "EJERCICIOS DE EVALUACIÓN DEL TEMA 3"
+output: html_notebook
+author: Diego Heras B
+---
+
+
+```{r}
+options(Encoding="UTF-8")
+```
+
+
+
+## EJERCICIOS
+
+Realice los siguientes ejercicios y envíe para corregir los archivos con el código y los resultados.
+
+
+###  1.Utiliza los datos “Arthritis” (paquete “vcd”) sobre un ensayo clínico de doble ciego que investiga un nuevo tratamiento para la artritis reumatoide. 
+#Tenemos información de 84 observaciones de 5 variables: 
+#     - la identificación del paciente (ID), 
+#     - el tratamiento (Treatment: Placebo, Treated), 
+#     - el sexo (Sex: Female, Male), 
+#     - la edad (Age) y 
+#     - la mejoría (Improved: None, Some, Marked). 
+#   Para el grupo tratamiento, queremos comparar las edades de los pacientes que no mostraron mejoría con los que sí tuvieron una marcada mejoría. Realiza pruebas paramétricas, no paramétricas y robustas. Interpreta y compara los resultados.
+
+
+```{r}
+
+library(vcd)     # ativamos librería vcd para extraer el conjunto de datos
+library(grid)    # librería adicional requerida por R
+head(Arthritis)  # Conjunto de datos para el análisis
+
+```
+
+Extracción de los subsets de datos a utilizar en la comparación de edades de los pacientes con tratamiento que no mostraron mejoría (None) con las edades de los pacientes con tratamiento que  mostraton una diferencia marcada: 
+
+```{r}
+
+ar<-Arthritis
+
+# pacientes con tratamiento y que no mostraron mejoría
+ar.t.n<-subset(ar,Treatment=="Treated" & Improved=="None") 
+head(ar.t.n)
+
+# pacientes con tratamiento y que mostraron mejoría marcada
+ar.t.m<-subset(ar,Treatment=="Treated" & Improved=="Marked")
+head(ar.t.m)
+
+```
+
+Para determinar un tipo de comparación primero se deduce que los vectores de datos analizar son independientes ya que los sujetos de estudio no son los mismos ni tampoco tienen ningún parámetro en común. Por lo tanto se pantea realizar una prueba de comparación para dos medias muestrales independientes, previa comprobación de los supuestos de normalidad y la determinación de igualdad de las varianzas:
+
+```{r}
+# COMPROBACIÓN DE SUPUESTOS
+# 1. Pruebas de normalidad, test de Shapiro. Ho: X es normal.
+
+shapiro.test(ar.t.n$Age)    # pacientes que no mejoraron
+shapiro.test(ar.t.m$Age)    # pacientes con mejoría marcada
+
+# 2. Prueba de homogenidad de Levene ya que uno de los dos vectores no es normal. Ho: son momogeneas.
+
+library(car)
+library(carData)
+
+ar.t.nm<-subset(ar,Treatment=="Treated")
+ar.t.nm<-subset(ar.t.nm, Improved=="None" | Improved=="Marked")
+
+leveneTest(Age~Improved, data=ar.t.nm)
+
+
+```
+
+
+

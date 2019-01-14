@@ -5,7 +5,7 @@ output: html_notebook
 
 
 ```{r}
-
+library(readxl)
 enc <- read_excel("enc.xlsx", sheet = "Hoja2")
 head(enc)
 
